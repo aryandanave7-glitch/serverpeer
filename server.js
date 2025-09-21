@@ -42,6 +42,17 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle connection acceptance
+  socket.on("accept-connection", ({ to, from }) => {
+    const targetId = userSockets[normKey(to)];
+    if (targetId) {
+      io.to(targetId).emit("connection-accepted", { from: normKey(from) });
+      console.log(`✅ Connection accepted: ${from.slice(0, 12)}... → ${to.slice(0, 12)}...`);
+    } else {
+      console.log(`⚠️ Could not deliver acceptance to ${to.slice(0,12)} (not registered/online)`);
+    }
+  });
+
 
   // Room and signaling logic remains the same
   socket.on("join", (room) => {
